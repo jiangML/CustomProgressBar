@@ -41,11 +41,12 @@ public class CustomProgressBar extends View {
     private int progressColor=Color.RED;
 
     public CustomProgressBar(Context context, AttributeSet attrs) {
-        super(context, attrs, 0);
+        super(context, attrs);
+        init(context,attrs);
     }
 
     public CustomProgressBar(Context context) {
-        super(context, null);
+        super(context);
 
     }
 
@@ -100,8 +101,13 @@ public class CustomProgressBar extends View {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
-      // super.onDraw(canvas);
+       super.onDraw(canvas);
         Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawRect(new Rect(0, 0, getWidth(), getHeight()), paint);
@@ -116,16 +122,18 @@ public class CustomProgressBar extends View {
         }
     }
 
-    public void setProgress(int progress)
+    public synchronized  void setProgress(int progress)
     {
         this.progress=progress;
-         //postInvalidate();
+        postInvalidate();
     }
 
 
     private void drawHorizontal(Canvas canvas)
     {
-
+          mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+          mPaint.setColor(Color.RED);
+          canvas.drawRect(new Rect(0,0,getWidth(),getHeight()),mPaint);
     }
 
     private void drawRing(Canvas canvas)
@@ -133,7 +141,6 @@ public class CustomProgressBar extends View {
         mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(paintColor);
         mPaint.setStrokeWidth(1);
-       // mPaint.setTextSize(progressTextSize);
         mPaint.setStyle(Paint.Style.STROKE);
 
         //画外圆
@@ -141,22 +148,22 @@ public class CustomProgressBar extends View {
         //画内圆
         canvas.drawCircle(getWidth()/2,getHeight()/2,(Math.min(getWidth(),getHeight())-2*paintWidth)/2,mPaint);
 
-        //canvas.translate(getPaddingLeft(),getPaddingTop());
-       // canvas.drawCircle(getWidth() / 2, getHeight() / 2, Math.min(getWidth(), getHeight()) / 2, mPaint);
 
         //画进度百分比
         String text=progress+"%";
         float textWdth=mPaint.measureText(text);
         float textHeight=(mPaint.descent()+mPaint.ascent())/2;
         mPaint.setTextSize(progressTextSize);
-        mPaint.setColor(Color.YELLOW);
+        mPaint.setColor(Color.RED);
+        mPaint.setStyle(Paint.Style.FILL);
         canvas.drawText(text, getWidth() / 2 - textWdth / 2, getHeight() / 2 - textHeight / 2, mPaint);
 
         //画进度值
         mPaint.setColor(progressColor);
         mPaint.setStrokeWidth(paintWidth);
+        mPaint.setStyle(Paint.Style.STROKE);
         float sweepAngle=progress*360*1.0f/progressMax;
-        canvas.drawArc(new RectF(0, 0, getWidth()-paintWidth/2, getHeight()-paintWidth/2), 0, sweepAngle, false, mPaint);
+        canvas.drawArc(new RectF(paintWidth/2, paintWidth/2, getWidth()-paintWidth/2, getHeight()-paintWidth/2), 0, sweepAngle, false, mPaint);
     }
 
     /**
