@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomProgressBar">
+        <attr name="progress_mode" format="enum">
+            <enum name="horziontal" value="0"/>
+            <enum name="ring" value="1"/>
+        </attr>
+        <attr name="paint_width" format="dimension"/>
+        <attr name="paint_color" format="color"/>
+        <attr name="progress_text_size" format="dimension"/>
+        <attr name="progress_max" format="integer"/>
+        <attr name="progress_color" format="color"/>
+    </declare-styleable>
+</resources>
