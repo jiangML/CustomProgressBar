@@ -64,8 +64,9 @@ public class CustomProgressBar extends View {
         paintColor=array.getColor(R.styleable.CustomProgressBar_paint_color, paintColor);
         progressTextSize=array.getDimensionPixelSize(R.styleable.CustomProgressBar_progress_text_size, progressTextSize);
         progressMax=array.getInteger(R.styleable.CustomProgressBar_progress_max, progressMax);
-        progressColor=array.getColor(R.styleable.CustomProgressBar_progress_color,progressColor);
+        progressColor=array.getColor(R.styleable.CustomProgressBar_progress_color, progressColor);
         array.recycle();
+        mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class CustomProgressBar extends View {
         Paint paint=new Paint();
         paint.getTextBounds(text, 0, text.length(), bound);
 
-        if(widthMode==MeasureSpec.EXACTLY)
+        if(widthMode==MeasureSpec.EXACTLY)// 精确值或者是match_parent
         {
             width=widthSize;
         }else{
@@ -108,9 +109,9 @@ public class CustomProgressBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
        super.onDraw(canvas);
-        Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.STROKE);
-        canvas.drawRect(new Rect(0, 0, getWidth(), getHeight()), paint);
+      //  Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawRect(new Rect(0, 0, getWidth(), getHeight()), mPaint);
         switch (barMode)
         {
             case PROGRESS_BAR_MODE_HORIZONTAL:
@@ -125,20 +126,20 @@ public class CustomProgressBar extends View {
     public synchronized  void setProgress(int progress)
     {
         this.progress=progress;
-        postInvalidate();
+        invalidate();
     }
 
 
     private void drawHorizontal(Canvas canvas)
     {
-          mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+      //    mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
           mPaint.setColor(Color.RED);
           canvas.drawRect(new Rect(0,0,getWidth(),getHeight()),mPaint);
     }
 
     private void drawRing(Canvas canvas)
     {
-        mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+
         mPaint.setColor(paintColor);
         mPaint.setStrokeWidth(1);
         mPaint.setStyle(Paint.Style.STROKE);

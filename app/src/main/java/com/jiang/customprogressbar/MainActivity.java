@@ -1,5 +1,6 @@
 package com.jiang.customprogressbar;
 
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,10 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             pb.setProgress(msg.what);
+            if(msg.what<100)
+            {
+                handler.sendEmptyMessageDelayed(msg.what++,200);
+            }
         }
     };
 
@@ -23,33 +28,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pb=(CustomProgressBar)findViewById(R.id.pb);
-        a();
+        handler.sendEmptyMessageDelayed(0,100);
     }
 
-
-
-
-    private void a()
-    {
-       new Thread(){
-           @Override
-           public void run() {
-               super.run();
-               Message msg=handler.obtainMessage();
-               try{
-                   for(int i=0;i<=100;i++)
-                   {
-                       msg.what=i;
-                       Thread.sleep(1000);
-                       msg.sendToTarget();
-                   }
-               }catch (InterruptedException e){
-
-               }
-
-           }
-       }.start();
-    }
 
 
 }
