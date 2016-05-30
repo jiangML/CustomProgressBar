@@ -3,11 +3,9 @@
 #####改项目是自定义view实现进度条
 在项目中CustomProgressBar即为改自定义view<br>
 ###下面是演示效果
-<div align=center>
  <img src="https://github.com/jiangML/CustomProgressBar/blob/master/video/custom.gif" width="400" height="700"
-</div>
 
-<br>
+
 
 *  该自定义view可以设置进度条为水平或者环型进度条
 *  可以设置进度条的进度值颜色和未到达进度的颜色
