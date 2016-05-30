@@ -23,7 +23,7 @@
                 android:text="start"/>
             <com.jiang.customprogressbar.CustomProgressBar
                 android:id="@+id/pb"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 app:progress_color="#5D478B"
@@ -36,7 +36,7 @@
 
             <com.jiang.customprogressbar.CustomProgressBar
                 android:id="@+id/pb4"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_width="100dp"
                 android:layout_height="200dp"
                 app:progress_color="#7D26CD"
