@@ -15,7 +15,7 @@
 *  进度条的宽度
 
 
-···
+```
 
            <com.jiang.customprogressbar.CustomProgressBar
                 android:id="@+id/pb"
@@ -29,7 +29,7 @@
                 app:progress_text_color="#0000EE"
                 app:progress_default_value="0"/>
  
-···
+```
 
 ####view的自定义属性如下<br>
 
