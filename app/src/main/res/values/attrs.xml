@@ -5,10 +5,12 @@
             <enum name="horziontal" value="0"/>
             <enum name="ring" value="1"/>
         </attr>
-        <attr name="paint_width" format="dimension"/>
-        <attr name="paint_color" format="color"/>
-        <attr name="progress_text_size" format="dimension"/>
-        <attr name="progress_max" format="integer"/>
-        <attr name="progress_color" format="color"/>
+        <attr name="paint_width" format="dimension"/><!--画笔的宽度 当是圆型进度条时 指定的是圆环的宽度-->
+        <attr name="paint_color" format="color"/><!--进度值中未到达进度的颜色-->
+        <attr name="progress_text_size" format="dimension"/><!--显示进度值的字体大小-->
+        <attr name="progress_max" format="integer"/><!--进度值的最大值-->
+        <attr name="progress_color" format="color"/><!--进度值的颜色-->
+        <attr name="progress_text_color" format="color"/><!--进度值字体的颜色-->
+        <attr name="progress_default_value" format="integer"/><!--进度默认值-->
     </declare-styleable>
 </resources>

@@ -16,7 +16,6 @@ import android.view.View;
  */
 public class CustomProgressBar extends View {
 
-//horizontal
     //水平进度条
     public static  final int PROGRESS_BAR_MODE_HORIZONTAL=0x1000;
     //环型进度条
@@ -38,7 +37,18 @@ public class CustomProgressBar extends View {
     //进度最大值 默认为100
     private int progressMax=100;
 
+    //默认进度的颜色
     private int progressColor=Color.RED;
+
+    //默认进度值字体的颜色
+    private int progressTextColor=progressColor;
+
+    //测量字体大小的Rect
+    private    Rect bound;
+
+    //当时水平进度条时 百分值左右的padding
+    private int offset=dp2px(5);
+
 
     public CustomProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -65,8 +75,11 @@ public class CustomProgressBar extends View {
         progressTextSize=array.getDimensionPixelSize(R.styleable.CustomProgressBar_progress_text_size, progressTextSize);
         progressMax=array.getInteger(R.styleable.CustomProgressBar_progress_max, progressMax);
         progressColor=array.getColor(R.styleable.CustomProgressBar_progress_color, progressColor);
+        progressTextColor=array.getColor(R.styleable.CustomProgressBar_progress_text_color, progressTextColor);
+        progress=array.getInteger(R.styleable.CustomProgressBar_progress_default_value,progress);
         array.recycle();
         mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        bound=new Rect();
     }
 
     @Override
@@ -81,9 +94,8 @@ public class CustomProgressBar extends View {
         int heightMode=MeasureSpec.getMode(heightMeasureSpec);
 
         String text="100%";
-        Rect bound=new Rect();
-        Paint paint=new Paint();
-        paint.getTextBounds(text, 0, text.length(), bound);
+
+        mPaint.getTextBounds(text, 0, text.length(), bound);
 
         if(widthMode==MeasureSpec.EXACTLY)// 精确值或者是match_parent
         {
@@ -98,7 +110,13 @@ public class CustomProgressBar extends View {
         }else{
             height=getPaddingTop()+bound.height()+getPaddingBottom();
         }
-        setMeasuredDimension(width, height);
+
+        if (barMode==PROGRESS_BAR_MODE_RING)
+        {
+            setMeasuredDimension(Math.min(width,height), Math.min(width,height));
+        }else {
+            setMeasuredDimension(width, height);
+        }
     }
 
     @Override
@@ -109,9 +127,6 @@ public class CustomProgressBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
        super.onDraw(canvas);
-      //  Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setStyle(Paint.Style.STROKE);
-        canvas.drawRect(new Rect(0, 0, getWidth(), getHeight()), mPaint);
         switch (barMode)
         {
             case PROGRESS_BAR_MODE_HORIZONTAL:
@@ -123,20 +138,60 @@ public class CustomProgressBar extends View {
         }
     }
 
-    public synchronized  void setProgress(int progress)
-    {
-        this.progress=progress;
-        invalidate();
+    /**
+     * 画水平进度条
+     * @param canvas
+     */
+    private void drawHorizontal(Canvas canvas) {
+
+         String text=getProgress()+"%";
+         float textWidth=mPaint.measureText(text);
+         float textHeight=mPaint.descent()+mPaint.ascent();
+
+         //画当前进度值
+          mPaint.setColor(progressColor);
+          mPaint.setStyle(Paint.Style.STROKE);
+          mPaint.setStrokeWidth(paintWidth);
+          if(progress<progressMax)
+          {
+              canvas.drawLine(0,getHeight()/2,(getWidth()-2*offset-textWidth)*progress/progressMax,getHeight()/2,mPaint);
+          }
+          if(progress>=progressMax)
+          {
+              canvas.drawLine(0,getHeight()/2,getWidth()-2*offset-textWidth,getHeight()/2,mPaint);
+          }
+
+
+          //画当前百分比进度值
+          mPaint.setTextSize(progressTextSize);
+          mPaint.setStrokeWidth(0);
+          mPaint.setStyle(Paint.Style.FILL);
+          mPaint.setColor(progressTextColor);
+          if(progress<progressMax) {
+              canvas.drawText(text, (getWidth()-2*offset-textWidth) * progress / progressMax + offset, getHeight() / 2 - textHeight / 2, mPaint);
+          }
+
+          if(progress>=progressMax)
+          {
+              canvas.drawText(text, getWidth()-offset-textWidth, getHeight() / 2 - textHeight / 2, mPaint);
+          }
+
+
+        //画未到达的进度条
+          mPaint.setColor(paintColor);
+          mPaint.setStrokeWidth(paintWidth);
+          mPaint.setStyle(Paint.Style.STROKE);
+          if (progress < progressMax) {
+            canvas.drawLine((getWidth()-2*offset-textWidth) * progress / progressMax + 2 * offset + textWidth, getHeight() / 2, getWidth(), getHeight() / 2, mPaint);
+          }
+
+
     }
 
-
-    private void drawHorizontal(Canvas canvas)
-    {
-      //    mPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
-          mPaint.setColor(Color.RED);
-          canvas.drawRect(new Rect(0,0,getWidth(),getHeight()),mPaint);
-    }
-
+    /**
+     * 画环型进度条
+     * @param canvas
+     */
     private void drawRing(Canvas canvas)
     {
 
@@ -153,19 +208,72 @@ public class CustomProgressBar extends View {
         //画进度百分比
         String text=progress+"%";
         float textWdth=mPaint.measureText(text);
-        float textHeight=(mPaint.descent()+mPaint.ascent())/2;
+        float textHeight=mPaint.descent()+mPaint.ascent();
         mPaint.setTextSize(progressTextSize);
-        mPaint.setColor(Color.RED);
+        mPaint.setColor(progressTextColor);
         mPaint.setStyle(Paint.Style.FILL);
-        canvas.drawText(text, getWidth() / 2 - textWdth / 2, getHeight() / 2 - textHeight / 2, mPaint);
+        canvas.drawText(text, getWidth() / 2 - textWdth / 2, getHeight() / 2 - textHeight/2, mPaint);
 
         //画进度值
         mPaint.setColor(progressColor);
         mPaint.setStrokeWidth(paintWidth);
         mPaint.setStyle(Paint.Style.STROKE);
         float sweepAngle=progress*360*1.0f/progressMax;
-        canvas.drawArc(new RectF(paintWidth/2, paintWidth/2, getWidth()-paintWidth/2, getHeight()-paintWidth/2), 0, sweepAngle, false, mPaint);
+        canvas.drawArc(new RectF(paintWidth / 2, paintWidth / 2, getWidth() - paintWidth / 2, getHeight() - paintWidth / 2), 0, sweepAngle, false, mPaint);
     }
+
+    /**
+     * 设置进度值
+     * @param progress
+     */
+    public synchronized  void setProgress(int progress)
+    {
+        this.progress=progress;
+        if(getProgress()>getProgressMax())
+        {
+            return;
+        }
+        invalidate();
+    }
+
+    /**
+     *获取进度值
+     * @return
+     */
+    public synchronized int getProgress()
+    {
+        return this.progress;
+    }
+
+    /**
+     * 获取进度最大值
+     * @return
+     */
+    public synchronized int getProgressMax()
+    {
+        return this.progressMax;
+    }
+
+    /**
+     * 设置进度最大值
+     * @param progressMax
+     */
+    public synchronized void  setProgressMax(int progressMax)
+    {
+        this.progressMax=progressMax;
+    }
+
+    /**
+     * 设置进度值字体颜色
+     * @param textColor
+     */
+   public synchronized  void setProgressTextColor(int textColor)
+   {
+       this.progressTextColor=textColor;
+   }
+
+
+
 
     /**
      * dp转px
